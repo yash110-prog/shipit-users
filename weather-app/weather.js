@@ -53,6 +53,8 @@ function getWeather() {
 }
 
 // Level 4 Bug 1: Old weather doesn't clear if new search fails
+
+
 // Level 4 Bug 2: Icons may not match weather condition: icon fetch not validated
 
 // Level 5 Bug 1: No debounce for search; repeated clicks can flood API

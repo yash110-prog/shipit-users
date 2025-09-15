@@ -6,39 +6,45 @@ let previousInput = '';
 let memory = 0;
 let isNewCalculation = false;
 
-// Bug Level 1 - Issue 1: Missing initialization of display
-// The display should be initialized to '0' on page load
+// Initialize calculator on page load
+window.onload = function () {
+    display.value = '0'; // Fix: Level 1 - Initialize display
+};
 
-// Bug Level 1 - Issue 2: Incorrect operator precedence handling
+// Check if a value is an operator
+function isOperator(value) {
+    return ['+', '-', '*', '/'].includes(value);
+}
+
+// Append value to display
 function appendToDisplay(value) {
     if (isNewCalculation && !isOperator(value)) {
         currentInput = '';
         isNewCalculation = false;
     }
-    
+
     if (isOperator(value)) {
         if (currentInput === '' && value === '-') {
             // Allow negative numbers
             currentInput += value;
         } else if (currentInput !== '') {
             if (previousInput !== '' && operator !== '') {
-                calculate();
+                calculate(); // Fix: Handles chain calculations
             }
             operator = value;
             previousInput = currentInput;
             currentInput = '';
         }
     } else {
+        // Fix: Prevent multiple decimal points
+        if (value === '.' && currentInput.includes('.')) return;
         currentInput += value;
     }
-    
+
     updateDisplay();
 }
 
-function isOperator(value) {
-    return ['+', '-', '*', '/'].includes(value);
-}
-
+// Update display
 function updateDisplay() {
     if (currentInput === '') {
         display.value = previousInput || '0';
@@ -47,6 +53,7 @@ function updateDisplay() {
     }
 }
 
+// Clear display
 function clearDisplay() {
     currentInput = '';
     operator = '';
@@ -55,16 +62,16 @@ function clearDisplay() {
     display.value = '0';
 }
 
-// Bug Level 2 - Issue 1: Division by zero not handled properly
+// Perform calculation
 function calculate() {
     if (previousInput === '' || currentInput === '' || operator === '') {
         return;
     }
-    
+
     let prev = parseFloat(previousInput);
     let current = parseFloat(currentInput);
     let result;
-    
+
     switch (operator) {
         case '+':
             result = prev + current;
@@ -76,21 +83,30 @@ function calculate() {
             result = prev * current;
             break;
         case '/':
-            result = prev / current; 
+            if (current === 0) { // Fix: Handle division by zero
+                display.value = "Error";
+                currentInput = '';
+                previousInput = '';
+                operator = '';
+                return;
+            }
+            result = prev / current;
             break;
         default:
             return;
     }
-    
-    // Bug Level 2 - Issue 2: Floating point precision issues
-    // Result should be rounded to avoid floating point errors
+
+    // Fix: Floating point precision issues
+    result = parseFloat(result.toFixed(10));
+
     currentInput = result.toString();
     operator = '';
-    previousInput = '';
+    previousInput = currentInput; // Fix: Keep result for chain calculations
     isNewCalculation = true;
     updateDisplay();
 }
 
+// Delete last character
 function deleteLast() {
     if (currentInput.length > 0) {
         currentInput = currentInput.slice(0, -1);
@@ -101,10 +117,12 @@ function deleteLast() {
     }
 }
 
-// Bug Level 3 - Issue 1: Memory functions don't work with current display value
+// Memory functions
 function memoryStore() {
     if (currentInput !== '') {
-        memory = parseFloat(display.value); // Bug: Should use currentInput or display.value consistently
+        memory = parseFloat(currentInput);
+    } else {
+        memory = parseFloat(display.value);
     }
 }
 
@@ -117,95 +135,30 @@ function memoryClear() {
     memory = 0;
 }
 
-// Bug Level 3 - Issue 2: Memory add function has logical error
 function memoryAdd() {
-    if (currentInput !== '') {
-        memory += parseFloat(currentInput);
-    } else {
-        memory += parseFloat(display.value); // Bug: Inconsistent behavior
-    }
+    let value = currentInput !== '' ? parseFloat(currentInput) : parseFloat(display.value);
+    memory += value;
+
+    // Fix: Prevent memory overflow (limit to safe range)
+    if (memory > Number.MAX_SAFE_INTEGER) memory = Number.MAX_SAFE_INTEGER;
+    if (memory < Number.MIN_SAFE_INTEGER) memory = Number.MIN_SAFE_INTEGER;
 }
 
-// Bug Level 4 - Issue 1: Multiple decimal points allowed
-function appendToDisplay(value) {
-    if (isNewCalculation && !isOperator(value)) {
-        currentInput = '';
-        isNewCalculation = false;
-    }
-    
-    if (isOperator(value)) {
-        if (currentInput === '' && value === '-') {
-            currentInput += value;
-        } else if (currentInput !== '') {
-            if (previousInput !== '' && operator !== '') {
-                calculate();
-            }
-            operator = value;
-            previousInput = currentInput;
-            currentInput = '';
-        }
-    } else {
-        // Bug: No check for multiple decimal points
-        currentInput += value;
-    }
-    
-    updateDisplay();
-}
+// Keyboard input support
+document.addEventListener('keydown', function (event) {
+    const key = event.key;
 
-// Bug Level 4 - Issue 2: Keyboard input not supported
-// Missing keyboard event listeners for better UX
-
-// Bug Level 5 - Issue 1: Chain calculations don't work properly
-function calculate() {
-    if (previousInput === '' || currentInput === '' || operator === '') {
-        return;
+    if (!isNaN(key)) {
+        appendToDisplay(key); // Numbers
+    } else if (isOperator(key)) {
+        appendToDisplay(key);
+    } else if (key === '.') {
+        appendToDisplay('.');
+    } else if (key === 'Enter' || key === '=') {
+        calculate();
+    } else if (key === 'Backspace') {
+        deleteLast();
+    } else if (key.toLowerCase() === 'c') {
+        clearDisplay();
     }
-    
-    let prev = parseFloat(previousInput);
-    let current = parseFloat(currentInput);
-    let result;
-    
-    switch (operator) {
-        case '+':
-            result = prev + current;
-            break;
-        case '-':
-            result = prev - current;
-            break;
-        case '*':
-            result = prev * current;
-            break;
-        case '/':
-            if (current === 0|| prev===0) { // Bug: Division by zero not handled
-                result=prev/0.000001;
-                return;
-            }
-            result = prev / current;
-            break;
-        default:
-            return;
-    }
-    
-    // Bug: Chain calculations reset previousInput incorrectly
-    currentInput = result.toString();
-    operator = '';
-    previousInput = ''; // Should keep result for chaining
-    isNewCalculation = true;
-    updateDisplay();
-}
-
-// Bug Level 5 - Issue 2: Memory overflow not handled
-function memoryAdd() {
-    if (currentInput !== '') {
-        memory += parseFloat(currentInput);
-    } else {
-        memory += parseFloat(display.value);
-    }
-    // Bug: No check for memory overflow (very large numbers)
-    // Should limit memory to reasonable bounds
-}
-
-// Initialize calculator on page load
-window.onload = function() {
-    display.value = '0'; // This should fix Level 1 Bug 1 if added
-};
+});
