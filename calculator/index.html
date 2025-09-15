@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Buggy Calculator</title>
+  <title>Fixed Calculator</title>
   <script src="https://cdn.tailwindcss.com"></script>
 </head>
 <body class="bg-gradient-to-br from-yellow-100 via-pink-100 to-purple-100 min-h-screen flex items-center justify-center font-mono">
@@ -14,53 +14,10 @@
     <div class="mb-4">
       <input id="display" type="text"
         class="w-full p-4 text-right text-2xl border-2 border-black rounded-lg bg-gray-50 shadow-inner"
-        readonly />
+        readonly value="0" />
     </div>
 
     <!-- Buttons -->
     <div class="grid grid-cols-4 gap-3">
-      <button onclick="clearDisplay()" class="btn bg-red-400">C</button>
-      <button onclick="deleteLast()" class="btn bg-yellow-400">←</button>
-      <button onclick="appendToDisplay('/')" class="btn bg-blue-400">÷</button>
-      <button onclick="appendToDisplay('*')" class="btn bg-blue-400">×</button>
-
-      <button onclick="appendToDisplay('7')" class="btn num">7</button>
-      <button onclick="appendToDisplay('8')" class="btn num">8</button>
-      <button onclick="appendToDisplay('9')" class="btn num">9</button>
-      <button onclick="appendToDisplay('-')" class="btn bg-blue-400">−</button>
-
-      <button onclick="appendToDisplay('4')" class="btn num">4</button>
-      <button onclick="appendToDisplay('5')" class="btn num">5</button>
-      <button onclick="appendToDisplay('6')" class="btn num">6</button>
-      <button onclick="appendToDisplay('+')" class="btn bg-blue-400">+</button>
-
-      <button onclick="appendToDisplay('1')" class="btn num">1</button>
-      <button onclick="appendToDisplay('2')" class="btn num">2</button>
-      <button onclick="appendToDisplay('3')" class="btn num">3</button>
-      <button onclick="calculate()" class="btn bg-green-400 row-span-2">=</button>
-
-      <button onclick="appendToDisplay('0')" class="btn num col-span-2">0</button>
-      <button onclick="appendToDisplay('.')" class="btn num">.</button>
-    </div>
-
-    <!-- Memory -->
-    <div class="mt-5 grid grid-cols-4 gap-2">
-      <button onclick="memoryStore()" class="btn bg-purple-400 text-sm">MS</button>
-      <button onclick="memoryRecall()" class="btn bg-purple-400 text-sm">MR</button>
-      <button onclick="memoryClear()" class="btn bg-purple-400 text-sm">MC</button>
-      <button onclick="memoryAdd()" class="btn bg-purple-400 text-sm">M+</button>
-    </div>
-  </div>
-
-  <script src="calculator.js"></script>
-
-  <style>
-    .btn {
-      @apply px-3 py-3 font-bold border-2 border-black rounded-lg shadow-[3px_3px_0px_#000] hover:translate-y-0.5 hover:shadow-[1px_1px_0px_#000] transition-all;
-    }
-    .num {
-      @apply bg-gray-200 hover:bg-gray-300;
-    }
-  </style>
-</body>
-</html>
+      <button onclick="clearDisplay()" class="px-3 py-3 font-bold border-2 border-black rounded-lg shadow-[3px_3px_0px_#000] bg-red-400 hover:translate-y-0.5 hover:shadow-[1px_1px_0px_#000] transition-all">C</button>
+      <button onclick="deleteLast()" class="px-3 py-3 font-bold border-2
